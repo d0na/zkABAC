@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./ganache_data:/ganache_data
+    entrypoint:
+      - node
+#      - ./cli.node.jsi
+      - /app/ganache-core.docker.cli.js
+      - --deterministic
+      - --db=/ganache_data
+      - --mnemonic
+      - 'iminimum symptom minute gloom tragic situate silver mechanic salad amused elite beef'
+      - '5777'
+      - --hostname
+      - '0.0.0.0'
+      - --debug
+      - -l 100000000
+      - --verbose
+      - --allowUnlimitedContractSize
+
+#
+#  #  -d --db ganache-db --port 8545 -l 9000000000 -g 20000000000 --accounts 10 --mnemonic 'include poem goose genuine baby flat mom token drama harsh sadness fit' --networkId 5777 --verbose --allowUnlimitedContractSize
+#
