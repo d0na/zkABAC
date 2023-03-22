@@ -18,8 +18,7 @@ import { EthrDID } from 'ethr-did'
 import { ethers } from 'ethers' 
 import { getPrivateKeyFromMnemonic } from './utils.js'
 import { computePublicKey } from '@ethersproject/signing-key'
-import pkg from 'did-jwt-vc';
-const { createVerifiableCredentialJwt, createVerifiablePresentationJwt, verifyCredential, verifyPresentation  } = pkg;
+import { createVerifiableCredentialJwt, createVerifiablePresentationJwt, verifyCredential, verifyPresentation  }  from 'did-jwt-vc';
 
 const fs = require("fs")
 const Web3 = require("web3")
@@ -38,16 +37,28 @@ async function generateKeysAndSigner(mnemonic, ganache_index, config_file) {
   return {keys: {public: publicKey, private: pair.sk}, address: pair.addr, signer: signer}
 }
 
+// Deploy Contract function
 async function deployContract(buildPath, web3, deployerAddress, input=undefined) {
 
   const compiled = JSON.parse(fs.readFileSync(buildPath))
   const c = new web3.eth.Contract(compiled.abi)
   let instance
-  if(input == undefined)
-    instance = await c.deploy({data: compiled.bytecode}).send({from: deployerAddress, gas: gas})
-  else
-    instance = await c.deploy({data: compiled.bytecode, arguments: input}).send({from: deployerAddress, gas: gas})
-  return instance
+    if(input == undefined){
+        instance = await c.deploy({data: compiled.bytecode}).send({from: deployerAddress, gas: gas})
+    }
+  else{
+//      console.log("Before contact deploy [", buildPath,"] -[data] ",compiled.bytecode)
+//        console.log("Before contact deploy [", buildPath,"] -[input] ",input)
+//        console.log("Before contact deploy [", buildPath,"] -[from] ",deployerAddress)
+//        console.log("Before contact deploy [", buildPath,"] -[gas] ",gas)
+        // Call this function to deploy the contract to the blockchain. After successful deployment the promise will resolve with a new contract instance.
+        //data - String: The byte code of the contract.
+        // arguments - Array (optional): The arguments which get passed to the constructor on deployment.
+        instance = await c.deploy({data: compiled.bytecode, arguments: input}).send({from: deployerAddress, gas: gas})
+  }
+
+    return instance
+
 }
 
 // Global variables
@@ -113,16 +124,19 @@ async function test() {
     signer: resourceOwnerKeys.signer
   })
 
-  // Attribute Manager: Deploy verifier contracts
+  // Attribute Manager: Deploy verifier contractsls console.assert(expression, object);
   console.log("Attribute Manager: Deploying verifiers and AM Contract")
   const verifierEnrollmentYear = await deployContract("../build/contracts/NeltenygVerifier.json", web3, attributeManager)
   const verifierGreaterOrEqual = await deployContract("../build/contracts/GreaterOrEqualThanVerifier.json", web3, attributeManager)
   const AMContract = await deployContract("../build/contracts/AMContract.json", web3, attributeManager)
 
   console.log("Resource Owner: Deploying SmartPolicy")
+
   const targetGrade = 27
   const targetRole = web3.eth.abi.encodeParameter("string", "bachelor student")
-  const smartPolicy = await deployContract("../build/contracts/XACMLSmartPolicy.json", web3, resourceOwner, [AMContract._address, verifierGreaterOrEqual._address, verifierEnrollmentYear._address, targetGrade, targetRole])
+  //  const smartPolicy = await deployContract("../build/contracts/XACMLSmartPolicy.json", web3, resourceOwner, [AMContract._address, verifierGreaterOrEqual._address, verifierEnrollmentYear._address, targetGrade, targetRole])
+  // XACMLSmartPolicy (constructor) : _AMcontract: adress, _gradAvg_verifier :adress, _enrollment_verifier:adress
+  const smartPolicy = await deployContract("../build/contracts/XACMLSmartPolicy.json", web3, resourceOwner, [AMContract._address, verifierGreaterOrEqual._address, verifierEnrollmentYear._address])
 
   // Attribute Manager
   
