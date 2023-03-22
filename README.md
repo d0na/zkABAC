@@ -18,11 +18,20 @@ The repository contains the Solidity smart contracts and the test files in javas
 - ZoKrates, to generate zkSNARKs proofs and deploy verifier smart contracts: [link](https://zokrates.github.io/)
 - The NodeJs modules in the package.json
 
-## Contracts
+## Project structure
+The truffle project structure has the following items:
 
-The **contracts** folder contains into ZoKrates verifiers adapted to be imported together (for example, removing the Pairing structure and change the name to avoid re-definition compilation errors) and the zk-ABAC contracts. The contracts implement a reference example. The **test** folder hosts the smart contract used for the stress test.
+- `contracts/`: Directory for Solidity contracts
+- `migrations/`: Directory for scriptable deployment files
+- `test/`: Directory for test files for testing your application and contracts
+- `truffle-config.js`: Truffle configuration file
 
-### Testing the contracts 
+
+### Contracts and Test folders
+
+The **contracts** folder contains into **ZoKrates verifiers** adapted to be imported together (for example, removing the Pairing structure and change the name to avoid re-definition compilation errors) and the **zk-ABAC contracts**. The contracts implement a reference example. The **test** folder hosts the smart contract used for the stress test.
+
+## Testing the contracts 
 
 **Reference example testing**
 
@@ -40,6 +49,10 @@ The folder **usecase_scripts** contains the script to integrate the verifiable c
 
     cd usecase_scripts
     npm install
+
+Then **compile contracts**:
+
+	truffle compile
 
 and execute the **main.js** script with
 
